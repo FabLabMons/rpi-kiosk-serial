@@ -12,11 +12,17 @@ We use RPiOS desktop to have all required stuff for the kiosk mode built-in.
 2. Copy the Python file to the home directory (`service/init.py` and `service/connect.py`)
 3. Create a directory which will contain the web page files and copy the files from `web` directory there.
 4. Configure autostart to show localhost in Chromium web browser at login:
-  4.1 `sudo nano /etc/xdg/lxsession/LXDE-pi/autostart`
-  4.2 Add the following line: `@chromium-browser localhost/path/to/index.html`
+    1. `sudo nano /etc/xdg/lxsession/LXDE-pi/autostart`
+    2. Add the following line: `@chromium-browser localhost/path/to/index.html`
 5. Create the service to automatically connect to the serial port
-  5.1 `sudo systemctl --force --full edit <myscript>.service`
-  5.2 Copy/edit this content to the file:
+    1. `sudo systemctl --force --full edit <myscript>.service`
+    2. Copy the content of the code snippet in appendix a. into this file
+    3. Enable the script: `sudo systemctl enable --now <myscript>.service`
+    4. Check service status: `systemctl status <myscript>.service`
+    5. (Optional) Check the script output (like print(), etc.): `journalctl -b -e`
+  
+## Appendix
+### a. Service file contents
   ```
   [Unit]
   Description=My script to monitor the serial port
@@ -30,6 +36,3 @@ We use RPiOS desktop to have all required stuff for the kiosk mode built-in.
   [Install]
   WantedBy=multi-user.target
   ```
-  5.3 Enable the script: `sudo systemctl enable --now <myscript>.service`
-  5.4 Check service status: `systemctl status <myscript>.service`
-  5.5 (Optional) Check the script output (like print(), etc.): `journalctl -b -e`
