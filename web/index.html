@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Televie 2022</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+  <style>
+    @font-face {
+      font-family: Digital;
+      font-style: normal;
+      font-weight: 400;
+      src: url(digital-7-mono.ttf)
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    html {
+      background-color: #fafafa;
+      color: #212121;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 32px;
+    }
+
+    .content {
+      height: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .countdown {
+      margin-top: 100px;
+      text-align: center;
+      font-size: calc(10vh);
+      color: #212121;
+    }
+
+    .score {
+      margin-bottom: auto;
+      font-family: Digital;
+      font-size: calc(50vh);
+      color: #c00;
+      line-height: 1;
+    }
+
+    .logos {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      align-items: stretch;
+      padding: 16px 0;
+    }
+
+    .logos > div {
+      margin: 0 32px;
+    }
+
+    .logos img {
+      max-height: 50px;
+    }
+
+    #main {
+      display: none;
+    }
+  </style>
+
+  <script>
+    let countdown = 86400;
+
+    let getFormattedTime = (seconds) => {
+      var sec_num = parseInt(seconds, 10);
+      var hours   = Math.floor(sec_num / 3600);
+      var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+      var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+      if (hours   < 10) {hours   = "0"+hours;}
+      if (minutes < 10) {minutes = "0"+minutes;}
+      if (seconds < 10) {seconds = "0"+seconds;}
+
+      return hours+':'+minutes+':'+seconds;
+    };
+
+    let updateCountdown = () => {
+      let countdownElement = document.getElementById("countdown");
+
+      if (countdown > 0) {
+        countdown--;
+      }
+
+      if (countdownElement !== null) {
+        countdownElement.innerText = getFormattedTime(countdown);
+      }
+    };
+
+    let updateScore = async () => {
+      const rand = Math.random() * 1000000;
+      const url = "score.json?" + parseInt(rand);
+      const init = {
+        method: "get"
+      };
+
+      const request = new Request(url, init);
+
+      score = await fetch(request)
+        .then(response => {
+          if (!response.ok) {
+            console.log("Could not fetch score from file");
+          }
+
+          return response.json();
+        });
+
+      let scoreElement = document.getElementById("score");
+
+      if (scoreElement !== null) {
+        scoreElement.innerText = score.value;
+      }
+    };
+
+    let start = () => {
+      let setupHours = document.getElementById("hours").value;
+      let setupMinutes = document.getElementById("minutes").value;
+
+      countdown = setupHours * 3600 + setupMinutes * 60;
+
+      let setupDiv = document.getElementById("setup");
+      setupDiv.style.display = "none";
+
+      let mainDiv = document.getElementById("main");
+      mainDiv.style.display = "flex";
+
+      window.setInterval(() => {
+        updateCountdown();
+        updateScore();
+      }, 1000);
+    };
+  </script>
+</head>
+
+<body>
+  <div class="content" id="setup">
+    <div class="time">
+      <div>Temps restant:</div>
+      <input type="number" name="hours" id="hours" placeholder="heures" value="24">
+      <input type="number" name="minutes" id="minutes" placeholder="minutes" value="00">
+      <button onclick="start()">Démarrer</button>
+    </div>
+  </div>
+
+  <div class="content" id="main">
+    <div class="countdown" id="countdown"></div>
+
+    <div class="score" id="score"></div>
+
+    <div class="logos">
+      <div class="partners">
+        <img src="partner-1.jpg" alt="">
+        <img src="partner-2.png" alt="">
+        <img src="partner-3.png" alt="">
+        <img src="partner-4.jpg" alt="">
+        <img src="partner-5.png" alt="">
+        <img src="partner-6.png" alt="">
+      </div>
+
+      <div class="click">
+        <img src="logos-feder.jpg" alt="logos feder">
+        <img src="click.png" alt="">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
